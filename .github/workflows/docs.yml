@@ -19,14 +19,6 @@ jobs:
     name: Build Docusaurus
     runs-on: ubuntu-latest
     steps:
-      # Publishing is main-only. The github-pages environment enforces this at
-      # deploy time, but fail loud here too so a mistaken dispatch from another
-      # branch stops before building instead of silently producing no deploy.
-      - name: Refuse to publish from a non-main branch
-        if: github.ref != 'refs/heads/main'
-        run: |
-          echo "::error::Docs publish only from main (dispatched ref: ${{ github.ref }})."
-          exit 1
       - uses: actions/checkout@v6
 
       - uses: actions/setup-node@v4
