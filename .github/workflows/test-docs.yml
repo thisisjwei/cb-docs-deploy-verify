@@ -1,0 +1,37 @@
+name: Test Deploy Docs
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      # Mirror docs.yml: api/signer-api.yml is embedded in the site's API tab
+      - 'docs/**'
+      - 'api/**'
+      - '.github/workflows/test-docs.yml'
+      - '.github/workflows/docs.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  test-deploy:
+    name: Test deployment
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: docs/package-lock.json
+
+      - name: Install dependencies
+        # npm ci = reproducible install from package-lock.json
+        run: npm ci
+        working-directory: ./docs
+
+      - name: Test build website
+        run: npm run build
+        working-directory: ./docs
