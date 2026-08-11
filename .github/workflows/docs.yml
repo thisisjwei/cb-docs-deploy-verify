@@ -1,19 +1,15 @@
 name: Docs
 
+# Manual only: click "Run workflow" to publish the docs currently on the
+# selected branch (defaults to the repo default branch). Publishing is a
+# deliberate act, not a side effect of a merge, and a failed run can simply be
+# re-run without pushing a new commit.
 on:
-  push:
-    branches: [main]
-    paths:
-      # api/signer-api.yml is embedded in the site's API tab (SwaggerUI
-      # component), so spec-only changes should also redeploy
-      - 'docs/**'
-      - 'api/**'
-      - '.github/workflows/docs.yml'
+  workflow_dispatch:
 
 permissions:
   contents: read
 
-# Pages deployments race if two docs merges land close together; queue them
 concurrency:
   group: pages
   cancel-in-progress: false
@@ -23,6 +19,14 @@ jobs:
     name: Build Docusaurus
     runs-on: ubuntu-latest
     steps:
+      # Publishing is main-only. The github-pages environment enforces this at
+      # deploy time, but fail loud here too so a mistaken dispatch from another
+      # branch stops before building instead of silently producing no deploy.
+      - name: Refuse to publish from a non-main branch
+        if: github.ref != 'refs/heads/main'
+        run: |
+          echo "::error::Docs publish only from main (dispatched ref: ${{ github.ref }})."
+          exit 1
       - uses: actions/checkout@v6
 
       - uses: actions/setup-node@v4
