@@ -70,3 +70,5 @@ just build-signer-img $(git rev-parse --short HEAD)
 ```
 
 This will create two local images called `commit_boost/pbs:<git_hash>` and `commit_boost/signer:<git_hash>` for the PBS and Signer services respectively. Make sure to use these images in the `docker_image` field in the `[pbs]` and `[signer]` sections of the `.toml` config file, respectively.
+
+E5: PR-triggered docs change for test-docs.yml verification.
